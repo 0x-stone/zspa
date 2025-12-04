@@ -10,7 +10,7 @@ export function OnboardingModal() {
 
   return (
     <Dialog open={true}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" hideClose>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" >
         {step === 'interests' ? (
           <InterestsStep onNext={() => setStep('refund')} />
         ) : (
