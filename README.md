@@ -1,5 +1,7 @@
 # 🛡️ Zcash Shielded Philanthropy Agent (ZSPA)
 
+[Live Demo](http://100.30.82.110:3000/)
+
 ## The First Verifiable, Private AI That Helps You Spend ZEC Wisely
 
 **ZSPA** is a breakthrough in privacy-first philanthropy: an AI agent that runs entirely inside **hardware-isolated Trusted Execution Environments (TEEs)**, enabling you to donate Zcash through natural conversation while guaranteeing both **computational privacy** and **financial privacy**. Every donation decision is backed by a multi-layered trust scoring system, cross-chain routing intelligence, and cryptographic proof that your AI interactions never leave the enclave.
