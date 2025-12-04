@@ -836,10 +836,10 @@ async def check_donation_status_node(state: AgentState):
         "PENDING_DEPOSIT": "Waiting for deposit...",
         "PROCESSING": "Payment detected! Processing...",
         "INCOMPLETE_DEPOSIT": "Deposit incomplete",
-        "SUCCESS": "Donation Confirmed!"
+        "SUCCESS": "Donation Confirmed!",
+        "TIMEOUT":"Timeout reached"
     }
     
-    # Record donation in DB upon success
     if result.get("success") and status == "SUCCESS":
         fundraiser = state.get("selected_cause")
         async for db in get_db():
@@ -860,19 +860,16 @@ async def check_donation_status_node(state: AgentState):
         return {"messages": [success_msg]}
 
     max_retries = settings.MAX_DONATION_STATUS_POLL
-    # Handle timeout or failure
-    if retries >= max_retries or status in ["FAILED", "REFUNDED"]:
-        error_type = "payment_failed" if status in ["FAILED", "REFUNDED"] else "payment_timeout"
-        error_text = "Swap failed" if status == "FAILED" else "Verification timed out"
-        
-        return Command(
-            update=state,
-            goto=[Send("notify_on_error", {
-                "error": error_text,
-                "error_type": "payment_verification"
-            })]
+    if retries >= max_retries:
+        status = "TIMEOUT"
+        display_text = status_messages.get(status, "Timeout reached")
+        status_msg = ToolMessage(
+            content=json.dumps({"status": status, "message": display_text}),
+            name="payment_status",
+            tool_call_id=str(uuid.uuid4())
         )
-
+        return {"messages": [status_msg]}
+        
     display_text = status_messages.get(status, f"Status: {status}")
     status_msg = ToolMessage(
         content=json.dumps({"status": status, "message": display_text}),
@@ -880,7 +877,6 @@ async def check_donation_status_node(state: AgentState):
         tool_call_id=str(uuid.uuid4())
     )
     
-    # Loop back to self after delay for polling
     await asyncio.sleep(settings.DONATION_STATUS_POLL_INTERVAL)
     return Command(
         goto="verify_donation_node",
