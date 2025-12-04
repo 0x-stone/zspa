@@ -20,7 +20,7 @@ export function DonationCertificate({
       <CardContent className="space-y-4">
         <div className="text-center">
           <p className="text-3xl font-bold text-primary mb-2">
-            {formatCurrency(amountUsd)}
+            {formatCurrency(Number(amountUsd))}
           </p>
           <p className="text-muted-foreground">donated to</p>
           <p className="text-xl font-semibold mt-2">{cause.title}</p>
