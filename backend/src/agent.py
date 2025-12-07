@@ -812,9 +812,8 @@ async def request_donation_status_async(
                 timeout=15
             ) as response:
                 data = await response.json()
-                print(data)
                 if response.status == 200:
-                    return {"success": True, "status": data.get("status"), "amount_usd":data.get("amountInUsd")}
+                    return {"success": True, "status": data.get("status"), "amount_usd":data.get("swapDetails", {}).get("amountInUsd")}
                 return {"success": False, "error": f"HTTP {response.status}"}
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -845,11 +844,10 @@ async def check_donation_status_node(state: AgentState):
         async for db in get_db():
             donation = schemas.DonationCreate(
                 fundraiser_id=fundraiser.get("id"), 
-                amount_zec=state.get("amount"), 
-                amount= result.get("amount_usd")
+                amount_zec=float(state.get("amount")), 
+                amount= float(result.get("amount_usd"))
             )
             await crud.create_donation(db, donation)
-            await score_util.recompute_fundraiser_amount_raised(db, fundraiser.get("id"))
             break
             
         success_msg = ToolMessage(
