@@ -79,6 +79,7 @@ class UpdateResponse(UpdateCreate):
 class DonationCreate(BaseModel):
     fundraiser_id: str
     amount: float
+    amount_zec: float
 
 class DonationResponse(DonationCreate):
     id: str
